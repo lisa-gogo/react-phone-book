@@ -1,0 +1,194 @@
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+
+const style = {
+  table: {
+    borderCollapse: 'collapse'
+  },
+  tableCell: {
+    border: '1px solid gray',
+    margin: 0,
+    padding: '5px 10px',
+    width: 'max-content',
+    minWidth: '150px'
+  },
+
+  list :{
+    color:'pink',
+     border: '1px solid gray',
+    margin: 0,
+    padding: '5px 10px',
+    width: 'max-content',
+    minWidth: '150px'
+  },
+  form: {
+    container: {
+      padding: '20px',
+      border: '1px solid #F0F8FF',
+      borderRadius: '15px',
+      width: 'max-content',
+      marginBottom: '40px'
+    },
+    inputs: {
+      marginBottom: '5px'
+    },
+    submitBtn: {
+      marginTop: '10px',
+      padding: '10px 15px',
+      border:'none',
+      backgroundColor: 'lightseagreen',
+      fontSize: '14px',
+      borderRadius: '5px'
+    }
+  }
+}
+
+// initial value 
+const initial = 
+{id:1,
+firstN:'Coder',
+LastN:'Byte',
+Phone:8885559999}
+
+
+function PhoneBookForm({ addEntryToPhoneBook, handleSubmit }) {
+
+  const [firstInput, setFirst] = useState('Coder')
+  const [lastInput,setLastInput] = useState('Byte')
+  const [phone, setPhone] = useState(8885559999)
+
+
+  
+  const handleFirstN =(e)=>{
+     setFirst(e.target.value)
+  }
+
+  const handleLastName=(e)=>{
+    setLastInput(e.target.value)
+  }
+
+  const handlePhone=(e)=>{
+    setPhone(e.target.value)
+  }
+
+  const handleAddUser =(e)=>{
+    e.preventDefault();
+    if(!firstInput || !lastInput || ! phone) return;
+    const newUser ={firstN:firstInput,
+    LastN:lastInput,Phone:phone}
+    handleSubmit(newUser)
+  }
+
+  return (
+    <form onSubmit={e => { e.preventDefault() }} style={style.form.container}>
+      <label>First name:</label>
+      <br />
+      <input 
+        style={style.form.inputs}
+        className='userFirstname'
+        name='userFirstname' 
+        type='text'
+        onChange={handleFirstN}
+        value={firstInput}
+      />
+      <br/>
+      <label>Last name:</label>
+      <br />
+      <input 
+        style={style.form.inputs}
+        className='userLastname'
+        name='userLastname' 
+        type='text' 
+        value={lastInput}
+        onChange={handleLastName}
+      />
+      <br />
+      <label>Phone:</label>
+      <br />
+      <input
+        style={style.form.inputs}
+        className='userPhone' 
+        name='userPhone' 
+        type='text'
+        value={phone}
+        onChange={handlePhone}
+      />
+      <br/>
+      <input 
+        style={style.form.submitBtn} 
+        className='submitButton'
+        type='submit' 
+        value='Add User' 
+        onClick={handleAddUser}
+      />
+    </form>
+  )
+}
+
+function InformationTable(props) {
+  return (
+    <table style={style.table} className='informationTable'>
+      <thead> 
+        <tr>
+          <th style={style.tableCell}>First name</th>
+          <th style={style.tableCell}>Last name</th>
+          <th style={style.tableCell}>Phone</th>
+        </tr>
+      </thead> 
+    </table>
+  );
+}
+
+function UserList({lists}) {
+
+  const sortByLastName = lists.sort((a,b)=>a.LastN.localeCompare(b.LastN))
+  const display = sortByLastName.map((person)=>(
+     <EachUser key={person.id} person={person}/>
+  ))
+  return (
+    <>
+     {display}
+    </>
+  );
+}
+
+function EachUser({person}){
+  return(
+     <div>
+   <table  style={style.table} className='informationTable' >
+      <thead> 
+        <tr key={person.id}>
+          <th style={style.list}>{person.firstN}</th>
+          <th style={style.list}>{person.LastN}</th>
+          <th style={style.list}>{person.Phone}</th>
+        </tr>
+      </thead> 
+    </table>
+    </ div>
+  )
+}
+
+
+
+
+function Application(props) {
+  const [lists,setLists] = useState([])
+
+  const handleSubmit =(user)=>{
+     user.id=lists.length+1;
+     setLists([...lists,user])
+   }
+
+  return (
+    <section>
+      <PhoneBookForm handleSubmit={handleSubmit} />
+      <InformationTable />
+      <UserList lists={lists}/>
+    </section>
+  );
+}
+
+ReactDOM.render(
+  <Application />,
+  document.getElementById('root')
+);
